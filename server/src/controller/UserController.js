@@ -1,11 +1,27 @@
+const {User} = require('../models')
+
 module.exports={
     //get all user
-    index (req, res){
-        res.send('เรียกข้อมูลผู้ใช้งานทั้งหมด')
+    async index (req, res){
+        try {
+            const users = await User.findAll()
+            res.send(users)
+        } catch (error) {
+            res.status(500).send({
+                error: 'The users information was incorrect'
+            })
+        }
     },
     //create user
-    create (req, res){
-        res.send('สร้างผู้ใช้งาน'+ JSON.stringify(req.body))
+    async create (req, res){
+        try {
+            const user = await User.create(req.body)
+            res.send(user.toJSON)
+        } catch (error) {
+            res.status(500).send({
+                error: 'TCreate user incorrect'
+            })
+        }
     },
     //edit user, suspend, active
     put (req, res) {
