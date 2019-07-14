@@ -16,23 +16,61 @@ module.exports={
     async create (req, res){
         try {
             const user = await User.create(req.body)
-            res.send(user.toJSON)
+            res.send(user.toJSON())
         } catch (error) {
             res.status(500).send({
-                error: 'TCreate user incorrect'
+                error: 'Create user incorrect'
             })
         }
     },
     //edit user, suspend, active
-    put (req, res) {
-        res.send('ทําการแก้ไขผุ้ใช้งาน: ' + req.params.userId + ' : ' + JSON.stringify(req.body))
+    async put (req, res) {
+        try {
+            const user = await User.update(req.body, {
+                where:{
+                    id: req.params.userId
+                }
+            })
+            res.send(req.body)
+        } catch (error) {
+            res.status(500).send({
+                error: 'Update user incorrect'
+            })
+        }
     },
     //delete user
-    remove (req, res){
-        res.send('ลบผู้ใช้งาน: ' + ' '+ req.params.userId + ' ' + JSON.stringify(req.body))
+    async remove (req, res){
+        try {
+            const user = await User.findOne({
+                where:{
+                    id: req.params.userId
+                }
+            })
+
+            if(!user){
+                return res.status(403).send({
+                    error: 'The user information was incorrect'
+                })
+            }
+
+            await user.destroy()
+            res.send(req.body)
+
+        } catch (error) {
+            res.status(500).send({
+                error: 'Delete user incorrect'
+            })
+        }
     },
     // get user by id   
-    show (req, res) {     
-        res.send('ดูขอ้มูลผใู้ชง้าน: ' + req.params.userId)
-    }
+    async show (req, res) {
+        try {
+          const user = await User.findByPk(req.params.userId)
+          res.send(user)
+        } catch (err) {
+            req.status(500).send({
+                error: 'The user information was incorrect'
+            })
+        }
+    },
 }
